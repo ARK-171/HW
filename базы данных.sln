@@ -1,0 +1,65 @@
+from sqlite3 import *
+import tkinter as tk
+from tkinter import ttk
+
+def insert():
+    conn = connect('рабочие.db')
+    cursor = conn.cursor()
+    ins = 'insert into рабочие values(' + "'" + nt1.get() + "'" + ',' + "'" + nt2.get() + "'" + ')'
+    cursor.execute(ins)
+    conn.commit()
+    nt1.delete(0, tk.END)
+    nt2.delete(0, tk.END)
+
+def show():
+    conn = connect('рабочие.db')
+    cursor = conn.cursor()
+    sql = 'select фамилия, имя from рабочие'
+    cursor.execute(sql)
+    for i in cursor.fetchall():
+        lb.insert(tk.END, str(i[0])+' '+str(i[1]))
+
+def delete():
+    lb.delete(0, tk.END)
+
+win = tk.Tk()
+
+style = ttk.Style(win)
+style.configure('uptab.TNotebook', tabposition = 'ws')
+
+ntbook = ttk.Notebook(win, style = 'lefttab.TNotebook')
+f1 = tk.Frame(ntbook, width=200, height=200)
+f2 = tk.Frame(ntbook, width=200, height=200)
+
+ntbook.add(f1, text='Добавить')
+ntbook.add(f2, text='Просмотр')
+ntbook.pack()
+
+lb = tk.Listbox(f2, width=30)
+
+scb = tk.Scrollbar(f2)
+scb.config(command = lb.yview)
+scb.pack(side=tk.RIGHT, fill=tk.Y)
+
+lb.pack(side=tk.RIGHT, fill=tk.BOTH)
+
+fr = tk.Frame(f2)
+fr.pack(side=tk.LEFT)
+
+txt1 = tk.Label(f1, text='Имя', font='Arial 10')
+txt2 = tk.Label(f1, text='Фамилия', font='Arial 10')
+nt1 = tk.Entry(f1)
+nt2 = tk.Entry(f1)
+bt1 = tk.Button(f1, text='Добавить', font='Arial 10', command = insert)
+bt2 = tk.Button(fr, text='Показать', font='Arial 10', command = show)
+bt2.pack(side=tk.BOTTOM)
+bt3 = tk.Button(fr, text='Удалить', font='Arial 10', command = delete)
+bt3.pack(side=tk.BOTTOM)
+
+txt1.grid(row=0, column=0)
+txt2.grid(row=1, column=0)
+nt1.grid(row=0, column=1)
+nt2.grid(row=1, column=1)
+bt1.grid(row=2, column=1, sticky=tk.E)
+
+win.mainloop()
