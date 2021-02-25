@@ -1,0 +1,42 @@
+from tkinter import *
+from tkinter import ttk
+
+def insert():
+    x = ent.get()
+
+x = 0
+
+win = Tk()
+
+lb = Listbox(win, width = 30)
+lb['bg'] = 'black'
+lb['fg'] = 'white'
+scb = Scrollbar(win, command = lb.yview)
+scb.pack(side = RIGHT, fill = Y)
+lb.pack(fill = BOTH)
+
+v2 = Frame(win)
+ent = Entry(v2, width = 25)
+ent['bg'] = 'black'
+ent['fg'] = 'white'
+bt = Button(v2, text = '=>', width = 5, command = insert)
+ent.pack(side = LEFT)
+bt.pack(side = RIGHT)
+
+v2.pack(side = BOTTOM)
+
+lb.insert(END, 'Приветствую вас на нашем форуме. Готовы ли вы пройти регистрацию?')
+if x == 'Да' or x == 'да'  or x == 'Готов' or x == 'готов':
+    y = x
+    lb.insert(END, 'Тогда ответьте на пару вопросов, чтобы заполнить анкету')
+    lb.insert(END, '1:  Введите почту')
+    if y != x:
+        lb.insert(END, '2:  Введите ник')
+        y = x
+        if y != x:
+            ib.insert(END, '3: Введите пароль')
+else:
+    lb.insert(END, 'Печально (0, 0) \n           ^')
+
+
+win.mainloop()
