@@ -3,10 +3,26 @@ from tkinter import ttk
 
 def insert():
     x = ent.get()
-
-x = 0
+    y = lb.get(0, END)
+    if x == 'Да' or x == 'да'  or x == 'Готов' or x == 'готов':
+        lb.insert(END, 'Тогда ответьте на пару вопросов, чтобы заполнить анкету')
+        lb.insert(END, '1:  Введите почту')
+        ent.delete(0, END)
+    elif len(y) == 3 and x != 'Да' and x != 'да'  and x != 'Готов' and x != 'готов':
+        lb.insert(END, '2:  Введите ник')
+        ent.delete(0, END)
+    elif len(y) == 4 and x != 'Да' and x != 'да'  and x != 'Готов' and x != 'готов':
+        lb.insert(END, '3: Введите пароль')
+        ent.delete(0, END)
+    elif len(y) == 5:
+        lb.insert(END, 'Поздравляю! Регистрация прошла успешно')
+        ent.delete(0, END)
+    elif len(y) == 1:
+        lb.insert(END, 'Печально (0, 0)')
+        ent.delete(0, END)
 
 win = Tk()
+win.geometry('450x190+300+250')
 
 lb = Listbox(win, width = 30)
 lb['bg'] = 'black'
@@ -26,17 +42,5 @@ bt.pack(side = RIGHT)
 v2.pack(side = BOTTOM)
 
 lb.insert(END, 'Приветствую вас на нашем форуме. Готовы ли вы пройти регистрацию?')
-if x == 'Да' or x == 'да'  or x == 'Готов' or x == 'готов':
-    y = x
-    lb.insert(END, 'Тогда ответьте на пару вопросов, чтобы заполнить анкету')
-    lb.insert(END, '1:  Введите почту')
-    if y != x:
-        lb.insert(END, '2:  Введите ник')
-        y = x
-        if y != x:
-            ib.insert(END, '3: Введите пароль')
-else:
-    lb.insert(END, 'Печально (0, 0) \n           ^')
-
 
 win.mainloop()
