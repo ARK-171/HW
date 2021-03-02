@@ -1,0 +1,120 @@
+from tkinter import *
+from tkinter import ttk
+from sqlite3 import *
+
+def insert():
+    conn = connect('ПРОЕКТ.db')
+    cursor = conn.cursor()
+    sql = 'select id from пользователь'
+    cursor.execute(sql)
+    a = cursor.fetchall()
+    if a == []:
+        b = 1
+    else:
+        b = a[-1][0] + 1
+    sql = 'insert into пользователь values (' + "'" + str(b) + "'" + ',' + "'" + ent1.get() + "'" + ',' + "'" + ent2.get() + "'" + ',' + "'" + ent3.get() + "'" + ')'
+    cursor.execute(sql)
+    conn.commit()
+    ent1.delete(0,END)
+    ent2.delete(0,END)
+    ent3.delete(0,END)
+
+def change():
+    pass
+
+def delete():
+    pass
+
+def show():
+    pass
+
+win = Tk()
+
+style = ttk.Style()
+style.configure('update.TNotebook', tabposition = 'ws')
+
+ntb = ttk.Notebook(win, style = 'lefttab.TNotebook')
+f1 = Frame(ntb)
+f2 = Frame(ntb)
+f3 = Frame(ntb)
+f4 = Frame(ntb)
+
+ntb.add(f1, text='Добавить')
+ntb.add(f2, text='Изменить')
+ntb.add(f3, text = 'Удалить')
+ntb.add(f4, text = 'Посмотреть')
+ntb.pack()
+
+### ДОБАВИТЬ ###
+text1 = Label(f1, text = 'Ник')
+text2 = Label(f1, text = 'Почта')
+text3 = Label(f1, text = 'Пароль')
+nt1 = Entry(f1, width=20)
+nt2 = Entry(f1, width=20)
+nt3 = Entry(f1, width=20)
+bt1 = Button(f1, text = 'Добавить', command = insert)
+
+### ИЗМЕНИТЬ ###
+text21 = Label(f2, text = 'Ник')
+text22 = Label(f2, text = 'Почта')
+text23 = Label(f2, text = 'Пароль')
+text24 = Label(f2, text = 'Новый Ник')
+text25 = Label(f2, text = 'Новый Почта')
+text26 = Label(f2, text = 'Новый Пароль')
+nt21 = Entry(f2, width=20)
+nt22 = Entry(f2, width=20)
+nt23 = Entry(f2, width=20)
+nt24 = Entry(f2, width=20)
+nt25 = Entry(f2, width=20)
+nt26 = Entry(f2, width=20)
+bt2 = Button(f2, text = 'Изменить', command = change)
+
+### УДАЛИТЬ ###
+text31 = Label(f3, text = 'Ник')
+text32 = Label(f3, text = 'Почта')
+text33 = Label(f3, text = 'Пароль')
+nt31 = Entry(f3, width=20)
+nt32 = Entry(f3, width=20)
+nt33 = Entry(f3, width=20)
+bt3 = Button(f3, text = 'Удалить', command = delete)
+
+### ПОСМОТРЕТЬ ###
+lb = Listbox(f4, width=30)
+scb = Scrollbar(f4)
+scb.config(command = lb.yview)
+scb.pack(side=RIGHT, fill=Y)
+lb.pack(side=RIGHT, fill=BOTH)
+v = Frame(f4)
+v.pack(side = BOTTOM)
+bt4 = Button(v, text = 'Показать', command = show)
+bt4.pack(side = RIGHT)
+
+text1.grid(row = 0, column = 0)
+text2.grid(row = 1, column = 0)
+text3.grid(row = 2, column = 0)
+text21.grid(row = 0, column = 0)
+text22.grid(row = 1, column = 0)
+text23.grid(row = 2, column = 0)
+text24.grid(row = 3, column = 0)
+text25.grid(row = 4, column = 0)
+text26.grid(row = 5, column = 0)
+text31.grid(row = 0, column = 0)
+text32.grid(row = 1, column = 0)
+text33.grid(row = 2, column = 0)
+nt1.grid(row=0, column=1)
+nt2.grid(row=1, column=1)
+nt3.grid(row=2, column=1)
+nt21.grid(row=0, column=1)
+nt22.grid(row=1, column=1)
+nt23.grid(row=2, column=1)
+nt24.grid(row=3, column=1)
+nt25.grid(row=4, column=1)
+nt26.grid(row=5, column=1)
+nt31.grid(row=0, column=1)
+nt32.grid(row=1, column=1)
+nt33.grid(row=2, column=1)
+bt1.grid(row=3, column=1, sticky=E)
+bt2.grid(row=6, column=1, sticky=E)
+bt3.grid(row=3, column=1, sticky=E)
+
+win.mainloop()
