@@ -12,7 +12,7 @@ def insert():
         b = 1
     else:
         b = a[-1][0] + 1
-    sql = 'insert into пользователь values (' + "'" + str(b) + "'" + ',' + "'" + ent1.get() + "'" + ',' + "'" + ent2.get() + "'" + ',' + "'" + ent3.get() + "'" + ')'
+    sql = 'insert into пользователь values (' + "'" + str(b) + "'" + ',' + "'" + nt1.get() + "'" + ',' + "'" + nt2.get() + "'" + ',' + "'" + nt3.get() + "'" + ')'
     cursor.execute(sql)
     conn.commit()
     ent1.delete(0,END)
@@ -20,13 +20,33 @@ def insert():
     ent3.delete(0,END)
 
 def change():
-    pass
+    conn = connect('ПРОЕКТ.db')
+    cursor = conn.cursor()
+    sql = 'update пользователь set ник = ' + "'" + nt24.get() + "' " + 'and почта = ' + "'" + nt25.get() + "'" + ' and пароль = ' + "'" + nt26.get() + "'" + ' where ник = ' + "'" + nt21.get() + "' " + 'and почта = ' + "'" + nt22.get() + "'" + ' and пароль = ' + "'" + nt23.get() + "'"
+    cursor.execute(sql)
+    conn.commit()
 
 def delete():
-    pass
+    conn = connect('ПРОЕКТ.db')
+    cursor = conn.cursor()
+    sql = 'delete from пользователь where ник = ' + "'" + nt31.get() + "' " + 'and почта = ' + "'" + nt32.get() + "'" + ' and пароль = ' + "'" + nt33.get() + "'"
+    cursor.execute(sql)
+    conn.commit()
 
 def show():
-    pass
+    conn = connect('ПРОЕКТ.db')
+    cursor = conn.cursor()
+    sql = 'select ник from пользователь'
+    cursor.execute(sql)
+    a = cursor.fetchall
+    lb.update(a)
+
+def delall():
+    conn = connect('ПРОЕКТ.db')
+    cursor = conn.cursor()
+    sql = 'delete from пользователь'
+    cursor.execute(sql)
+    conn.commit()
 
 win = Tk()
 
@@ -77,6 +97,7 @@ nt31 = Entry(f3, width=20)
 nt32 = Entry(f3, width=20)
 nt33 = Entry(f3, width=20)
 bt3 = Button(f3, text = 'Удалить', command = delete)
+bt32 = Button(f3, text = 'Удалить всё', command = delall)
 
 ### ПОСМОТРЕТЬ ###
 lb = Listbox(f4, width=30)
