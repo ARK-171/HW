@@ -1,0 +1,89 @@
+import pygame
+import os
+
+dir_path = os.path.dirname(__file__)
+fps = pygame.time.Clock()
+FPS = 60
+
+WIDTH = 1279
+HEIGHT = 700
+
+class Player:
+    def __init__(self, speed):
+        self.picture = pygame.image.load(os.path.join(dir_path, "спрайты\mage.png"))
+        self.picture1 = pygame.transform.flip(self.picture, True, False)
+        self.HP = 100
+        self.speed = speed
+        self.x = 100
+        self.y = 100
+        self.state = 1
+    def muve(self):
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_RIGHT]:
+            self.picture = pygame.image.load(os.path.join(dir_path, "спрайты\mage.png"))
+            self.x += self.speed
+            self.state = 1
+        if keys[pygame.K_LEFT]:
+            self.picture = self.picture1
+            self.x -= self.speed
+            self.state = -1
+        if keys[pygame.K_DOWN]:
+            self.y += self.speed
+        if keys[pygame.K_UP]:
+            self.y -= self.speed
+    def showe(self):
+        win.blit(self.picture,(self.x,self.y))
+
+class fire_ball:
+    def __init__(self, x, y, speed):
+        self.picture = [pygame.image.load(os.path.join(dir_path, "спрайты/fb0.png")),
+                        pygame.image.load(os.path.join(dir_path, "спрайты/fb1.png")),
+                        pygame.image.load(os.path.join(dir_path, "спрайты/fb2.png")),
+                        pygame.image.load(os.path.join(dir_path, "спрайты/fb3.png"))]
+        self.picture1 = [pygame.transform.flip(z, True, False) for z in self.picture]
+        self.x = x
+        self.y = y
+        self.speed = speed
+        self.damage = 20
+        self.l = 0
+        self.state = 0
+    def move(self):
+        if player.state == 1:
+            fireBall[-1].x += fireBall[-1].speed
+            self.l += self.speed
+        elif player.state == -1:
+            self.picture = self.picture1
+            fireBall[-1].x -= fireBall[-1].speed
+            self.l += self.speed
+    def showe(self):
+        win.blit(self.picture[self.state % len(self.picture)], (self.x, self.y))
+
+def fb():
+    key = pygame.key.get_pressed()
+    if key[pygame.K_SPACE]:
+        fireBall.append(fire_ball(player.x, player.y, 6))
+
+win = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption('Первая игра на Питоне')
+
+game = True
+player = Player(3)
+fireBall = []
+
+while game:
+    fps.tick(FPS)
+    win.fill((150,90,200))
+    player.showe()
+    player.muve()
+    fb()
+    if len(fireBall) != 0:
+        for i in fireBall:
+            i.showe()
+            i.move() 
+            if i.l > 30 or i.l == 30:
+                del(i)
+    for evente in pygame.event.get():
+        if evente.type == pygame.QUIT:
+            game = False
+    pygame.display.update()
+pygame.quit()
