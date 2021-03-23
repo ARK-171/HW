@@ -10,29 +10,31 @@ HEIGHT = 700
 
 class Player:
     def __init__(self, speed):
-        self.picture = pygame.image.load(os.path.join(dir_path, "спрайты\mage.png"))
-        self.picture1 = pygame.transform.flip(self.picture, True, False)
+        self.picture = [pygame.image.load(os.path.join(dir_path, "спрайты\mage.png")),
+                        pygame.image.load(os.path.join(dir_path, "спрайты\mage2.png"))]
+        self.picture1 = [pygame.transform.flip(z, True, False) for z in self.picture]
         self.HP = 100
         self.speed = speed
         self.x = 100
         self.y = 100
-        self.state = 1
+        self.state = 0
+        self.rect = self.picture[0].get_rect(topleft = (self.x, self.y))
     def muve(self):
+        self.y += 5 
         keys = pygame.key.get_pressed()
         if keys[pygame.K_RIGHT]:
-            self.picture = pygame.image.load(os.path.join(dir_path, "спрайты\mage.png"))
+            self.picture = [pygame.image.load(os.path.join(dir_path, "спрайты\mage.png")),
+                            pygame.image.load(os.path.join(dir_path, "спрайты\mage2.png"))]
             self.x += self.speed
             self.state = 1
         if keys[pygame.K_LEFT]:
             self.picture = self.picture1
             self.x -= self.speed
             self.state = -1
-        if keys[pygame.K_DOWN]:
-            self.y += self.speed
         if keys[pygame.K_UP]:
-            self.y -= self.speed
-    def showe(self):
-        win.blit(self.picture,(self.x,self.y))
+            pass
+    def show(self):
+        win.blit(self.picture[self.state % len(self.picture)], (self.x, self.y))
 
 class fire_ball:
     def __init__(self, x, y, speed):
@@ -55,13 +57,37 @@ class fire_ball:
             self.picture = self.picture1
             fireBall[-1].x -= fireBall[-1].speed
             self.l += self.speed
-    def showe(self):
+    def show(self):
         win.blit(self.picture[self.state % len(self.picture)], (self.x, self.y))
+
+class erth:
+    def __init__(self):
+        self.picture = pygame.image.load(os.path.join(dir_path, "спрайты\erth.png"))
+        self.picture.set_colorkey((255,255,255))
+        self.x = 0
+        self.y = 600
+        self.rect = self.picture.get_rect(topleft = (self.x, self.y))
+    def show(self):
+         win.blit(self.picture, (self.x, self.y))
+
 
 def fb():
     key = pygame.key.get_pressed()
     if key[pygame.K_SPACE]:
         fireBall.append(fire_ball(player.x, player.y, 6))
+
+def colider(Sprite1, Sprite2):
+    if ((Sprite1.x <= Sprite2.x <= Sprite.x + Spritel1.rect.width 
+        and Sprite1.y <= Sprite2.y <= Sprite1.y + Sprite1.rect.height) 
+        or (Sprite2.x <= Sprite2.x + Sprite2.rect.width <= Sprite1.x + Sprite1.rect.width
+        and Sprite1.y <= Sprite2.y + Sprite2.rect.height <= Sprite1.y + Sprite1.rect.height)
+        or Sprite2.x <= Sprite1.x + Sprite1.rect.width <= Sprite2.x
+        and Sprite2.y <= Sprite1.y <= Sprite2.y + Sprite2.rect.height
+        or (Sprite2.x <= Sprite1.x <= Sprite2.x + Sprite2.rect.width
+        and Sprite2.y <= Sprite1.y + Sprite2.rect.height <= Sprite2.y + Sprite2.rect.height)):
+            return True
+    else:
+        return False
 
 win = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption('Первая игра на Питоне')
@@ -69,16 +95,18 @@ pygame.display.set_caption('Первая игра на Питоне')
 game = True
 player = Player(3)
 fireBall = []
+e1 = erth()
 
 while game:
     fps.tick(FPS)
     win.fill((150,90,200))
-    player.showe()
-    player.muve()
+    player.show()
+    e1.show()
+    player.muve() 
     fb()
     if len(fireBall) != 0:
         for i in fireBall:
-            i.showe()
+            i.show()
             i.move() 
             if i.l > 30 or i.l == 30:
                 del(i)
