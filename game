@@ -1,5 +1,8 @@
+
 import pygame
 import os
+import math
+import random
 
 dir_path = os.path.dirname(__file__)
 fps = pygame.time.Clock()
@@ -12,6 +15,10 @@ class Player:
     def __init__(self, speed):
         self.picture = [pygame.image.load(os.path.join(dir_path, "sprits\mage.png")),
                         pygame.image.load(os.path.join(dir_path, "sprits\mage2.png"))]
+        l = 0
+        for i in self.picture:
+            self.picture[l] = pygame.transform.scale(i, (64, 64))
+            l += 1
         self.picture1 = [pygame.transform.flip(z, True, False) for z in self.picture]
         self.HP = 100
         self.speed = speed
@@ -33,6 +40,10 @@ class Player:
         if keys[pygame.K_RIGHT]:
             self.picture = [pygame.image.load(os.path.join(dir_path, "sprits\mage.png")),
                             pygame.image.load(os.path.join(dir_path, "sprits\mage2.png"))]
+            l = 0
+            for i in self.picture:
+                self.picture[l] = pygame.transform.scale(i, (64, 64))
+                l += 1
             self.x += self.speed
             self.state = 1
         if keys[pygame.K_LEFT]:
@@ -61,6 +72,10 @@ class fire_ball:
                         pygame.image.load(os.path.join(dir_path, "sprits/fb1.png")),
                         pygame.image.load(os.path.join(dir_path, "sprits/fb2.png")),
                         pygame.image.load(os.path.join(dir_path, "sprits/fb3.png"))]
+        l = 0
+        for i in self.picture:
+            self.picture[l] = pygame.transform.scale(i, (128, 128))
+            l += 1
         self.picture1 = [pygame.transform.flip(z, True, False) for z in self.picture]
         self.x = x
         self.y = y
@@ -91,6 +106,30 @@ class erth:
         self.rect = self.picture.get_rect(topleft = (self.x, self.y))
     def showe(self):
          win.blit(self.picture, (self.x, self.y))
+
+class meteor:
+    def __init__(self):
+        self.picture = pygame.transform.scale(pygame.image.load(os.path.join(dir_path, "sprits/meteor.png")), (64,64))
+        self.picture.set_colorkey((255,255,255))
+        self.x = -80
+        self.y = 800
+        self.speedy = 0
+        self.speedx = 0
+        self.damage = 20
+        self.angle = 0
+        self.rand = [-10,-9,-8,-7,-6,-5,-4,-3,-2,-1,1,2,3,4,5,6,7,8,9,10]
+    def fall(self):
+        if self.y < 700 and self.x < 1279 and self.x > -100:
+            self.y += self.speedy
+            self.x += self.speedx
+        else:
+            self.y = 0
+            self.x = random.randint(0,1279)
+            self.speedx = random.randint(-10,10)
+            self.speedy = random.choices(self.rand)
+            self.angle = math.atan(self.speedx/self.speedy)
+    def showe(self):
+        win.blit(pygame.transform.rotate(self.picture, self.angle), (self.x, self.y))
         
 def fb():
     if player.reload < 80:
@@ -121,18 +160,25 @@ player = Player(3)
 fireBall = []
 ground = []
 x = -256
+met = []
 
-for i in range (0, 4):
+for i in range (0, 3):
     ground.append(erth(x+256, 600))
     x += 256
+ground.append(erth(900, 600))
 
+for i in range (0, 5):
+    met.append(meteor())
 
 while game:
+    win.blit(pygame.image.load(os.path.join(dir_path, "sprits\wall.png")), (-100, 0))
     fps.tick(FPS)
-    win.fill((0,0,0))
     player.muve()
     player.showe()
     fb()
+    for i in met:
+        i.showe()
+        i.fall()
     for i in range(0, len(ground)):
         ground[i].showe()
         if colider(player, ground[i]) == True:
