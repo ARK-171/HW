@@ -1,8 +1,7 @@
-
 import pygame
 import os
-import math
 import random
+import math
 
 dir_path = os.path.dirname(__file__)
 fps = pygame.time.Clock()
@@ -13,11 +12,11 @@ HEIGHT = 700
 
 class Player:
     def __init__(self, speed):
-        self.picture = [pygame.image.load(os.path.join(dir_path, "sprits\mage.png")),
-                        pygame.image.load(os.path.join(dir_path, "sprits\mage2.png"))]
+        self.picture = [pygame.image.load(os.path.join(dir_path, "sprites\mage\mage.png")),
+                        pygame.image.load(os.path.join(dir_path, "sprites\mage\mage2.png"))]
         l = 0
         for i in self.picture:
-            self.picture[l] = pygame.transform.scale(i, (64, 64))
+            self.picture[l] = pygame.transform.scale(i, (128, 128))
             l += 1
         self.picture1 = [pygame.transform.flip(z, True, False) for z in self.picture]
         self.HP = 100
@@ -30,7 +29,6 @@ class Player:
         self.rect = self.picture[0].get_rect(topleft = (self.x, self.y))
         self.jump = 0
     def muve(self):
-        
         if self.jump > 0:
             self.y -= 10
             self.jump -= 10
@@ -38,11 +36,11 @@ class Player:
             self.y += 5
         keys = pygame.key.get_pressed()
         if keys[pygame.K_RIGHT]:
-            self.picture = [pygame.image.load(os.path.join(dir_path, "sprits\mage.png")),
-                            pygame.image.load(os.path.join(dir_path, "sprits\mage2.png"))]
+            self.picture = [pygame.image.load(os.path.join(dir_path, "sprites\mage\mage.png")),
+                            pygame.image.load(os.path.join(dir_path, "sprites\mage\mage2.png"))]
             l = 0
             for i in self.picture:
-                self.picture[l] = pygame.transform.scale(i, (64, 64))
+                self.picture[l] = pygame.transform.scale(i, (128, 128))
                 l += 1
             self.x += self.speed
             self.state = 1
@@ -68,10 +66,10 @@ class Player:
 
 class fire_ball:
     def __init__(self, x, y, speed, side):
-        self.picture = [pygame.image.load(os.path.join(dir_path, "sprits/fb0.png")),
-                        pygame.image.load(os.path.join(dir_path, "sprits/fb1.png")),
-                        pygame.image.load(os.path.join(dir_path, "sprits/fb2.png")),
-                        pygame.image.load(os.path.join(dir_path, "sprits/fb3.png"))]
+        self.picture = [pygame.image.load(os.path.join(dir_path, "sprites/fireball/fb0.png")),
+                        pygame.image.load(os.path.join(dir_path, "sprites/fireball/fb1.png")),
+                        pygame.image.load(os.path.join(dir_path, "sprites/fireball/fb2.png")),
+                        pygame.image.load(os.path.join(dir_path, "sprites/fireball/fb3.png"))]
         l = 0
         for i in self.picture:
             self.picture[l] = pygame.transform.scale(i, (128, 128))
@@ -85,10 +83,10 @@ class fire_ball:
         self.state = 0
         self.side = side
     def move(self):
-        if self.side == 1 and self.l <= 400:
+        if self.side == 1 and self.l <= 700:
             self.x += self.speed
             self.l += self.speed
-        elif self.side == -1 and self.l <= 400:
+        elif self.side == -1 and self.l <= 700:
             self.picture = self.picture1
             self.x -= self.speed
             self.l += self.speed
@@ -100,7 +98,7 @@ class fire_ball:
 
 class erth:
     def __init__(self, x , y):
-        self.picture = pygame.image.load(os.path.join(dir_path, "sprits/rock.png"))
+        self.picture = pygame.image.load(os.path.join(dir_path, "sprites/rock.png"))
         self.x = x
         self.y = y
         self.rect = self.picture.get_rect(topleft = (self.x, self.y))
@@ -109,25 +107,29 @@ class erth:
 
 class meteor:
     def __init__(self):
-        self.picture = pygame.transform.scale(pygame.image.load(os.path.join(dir_path, "sprits/meteor.png")), (64,64))
-        self.picture.set_colorkey((255,255,255))
+        self.picture = pygame.transform.scale(pygame.image.load(os.path.join(dir_path, "sprites/meteor.png")), (64,64))
+        self.picture.set_colorkey((246,246,246))
         self.x = -80
         self.y = 800
         self.speedy = 0
         self.speedx = 0
         self.damage = 20
         self.angle = 0
-        self.rand = [-10,-9,-8,-7,-6,-5,-4,-3,-2,-1,1,2,3,4,5,6,7,8,9,10]
+        self.state = 90
     def fall(self):
         if self.y < 700 and self.x < 1279 and self.x > -100:
-            self.y += self.speedy
-            self.x += self.speedx
+            self.y += self.speedy * -3
+            self.x += self.speedx * 3
         else:
             self.y = 0
             self.x = random.randint(0,1279)
-            self.speedx = random.randint(-10,10)
-            self.speedy = random.choices(self.rand)
-            self.angle = math.atan(self.speedx/self.speedy)
+            self.speedy = -random.random()
+            self.speedx = math.sqrt(1 - self.speedy*self.speedy) * random.choice([-1,1])
+            if self.speedx > 0:
+                self.state = 90
+            else:
+                self.state = -90
+            self.angle = math.degrees(math.atan(self.speedy/self.speedx)) + self.state
     def showe(self):
         win.blit(pygame.transform.rotate(self.picture, self.angle), (self.x, self.y))
         
@@ -140,17 +142,15 @@ def fb():
         player.reload = 0
 
 def colider(Sprite1, Sprite2):
-    if ((Sprite1.x < Sprite2.x < Sprite1.x + Sprite1.rect.width
-        and Sprite1.y < Sprite2.y < Sprite1.y + Sprite1.rect.height)
-        or (Sprite1.x < Sprite2.x + Sprite2.rect.width < Sprite1.x + Sprite1.rect.width
-        and Sprite1.y < Sprite2.y + Sprite2.rect.height < Sprite1.y + Sprite1.rect.height)
-        or (Sprite2.x < Sprite1.x < Sprite2.x + Sprite2.rect.width
-        and Sprite2.y < Sprite1.y < Sprite2.y + Sprite2.rect.height)
-        or (Sprite2.x < Sprite1.x + Sprite1.rect.width < Sprite2.x + Sprite2.rect.width
-        and Sprite2.y < Sprite1.y + Sprite1.rect.height < Sprite2.y + Sprite2.rect.height)):
-        return True
-    else:
-        return False
+    if (Sprite2.y + 10 >= Sprite1.y + Sprite1.rect.height >= Sprite2.y) and (Sprite2.x <= Sprite1.x <= Sprite2.x + Sprite2.rect.width or Sprite2.x <= Sprite1.x + Sprite1.rect.width <= Sprite2.x + Sprite2.rect.width):
+        Sprite1.y = Sprite2.y - Sprite1.rect.height
+        Sprite1.jumpe()
+    elif (Sprite2.y + Sprite2.rect.height - 10 <= Sprite1.y <= Sprite2.y + Sprite2.rect.height) and (Sprite2.x <= Sprite1.x <= Sprite2.x + Sprite2.rect.width or Sprite2.x <= Sprite1.x + Sprite1.rect.width <= Sprite2.x + Sprite2.rect.width):
+        Sprite1.y = Sprite2.y + Sprite2.rect.height + 10
+    elif (Sprite2.x <= Sprite1.x + Sprite1.rect.width <= Sprite2.x + 10) and (Sprite1.y <= Sprite2.y + Sprite2.rect.height <= Sprite1.y + Sprite1.rect.height or Sprite1.y <= Sprite2.y <= Sprite1.y + Sprite1.rect.height):
+        Sprite1.x = Sprite2.x - Sprite1.rect.width
+    elif (Sprite2.x + Sprite2.rect.width - 10 <= Sprite1.x <= Sprite2.x + Sprite2.rect.width) and (Sprite1.y <= Sprite2.y + Sprite2.rect.height <= Sprite1.y + Sprite1.rect.height or Sprite1.y <= Sprite2.y <= Sprite1.y + Sprite1.rect.height):
+        Sprite1.x = Sprite2.x + Sprite2.rect.width
 
 win = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption('Первая игра на Питоне') 
@@ -159,37 +159,34 @@ game = True
 player = Player(3)
 fireBall = []
 ground = []
+meteo = []
 x = -256
-met = []
 
 for i in range (0, 3):
     ground.append(erth(x+256, 600))
     x += 256
-ground.append(erth(900, 600))
-
-for i in range (0, 5):
-    met.append(meteor())
+ground.append(erth(200, 400))
+for i in range(0,10):
+    meteo.append(meteor())
 
 while game:
-    win.blit(pygame.image.load(os.path.join(dir_path, "sprits\wall.png")), (-100, 0))
     fps.tick(FPS)
+    win.fill((0,0,0))
     player.muve()
     player.showe()
     fb()
-    for i in met:
-        i.showe()
-        i.fall()
     for i in range(0, len(ground)):
         ground[i].showe()
-        if colider(player, ground[i]) == True:
-            player.y = ground[i].y - player.rect.height
-            player.jumpe()
+        colider(player, ground[i])
     if len(fireBall) != 0:
         for i in range(0, len(fireBall), 2):
             fireBall[i].move()
             fireBall[i].showe()
-            if fireBall[i].l >= 400:
+            if fireBall[i].l >= 700:
                 fireBall.pop(i)
+    for i in meteo:
+        i.fall()
+        i.showe()
     for evente in pygame.event.get():
         if evente.type == pygame.QUIT:
             game = False
