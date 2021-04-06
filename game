@@ -1,3 +1,4 @@
+  
 import pygame
 import os
 import random
@@ -7,13 +8,26 @@ dir_path = os.path.dirname(__file__)
 fps = pygame.time.Clock()
 FPS = 80
 
-WIDTH = 1279
-HEIGHT = 700
+WIDTH = 900
+HEIGHT = 600
+
+WorldWidth = 1800
+WorldHeight = 1200
+
+class Camera:
+    def __init__(self):
+        self.x = 0
+        self.y = 0
+    def update(self, sprite):
+        if sprite.rect.x < WorldWidth - WIDTH/2 and sprite.rect.x > WIDTH/2:
+            self.x = int(WIDTH/2) - sprite.rect.x
+        if sprite.rect.y < WorldHeight - HEIGHT/2 and sprite.rect.y > HEIGHT/2:
+            self.y = HEIGHT/2 - sprite.rect.y
 
 class Player:
     def __init__(self, speed):
-        self.picture = [pygame.image.load(os.path.join(dir_path, "sprites\mage\mage.png")),
-                        pygame.image.load(os.path.join(dir_path, "sprites\mage\mage2.png"))]
+        self.picture = [pygame.image.load(os.path.join(dir_path, "sprites\mage.png")),
+                        pygame.image.load(os.path.join(dir_path, "sprites\mage2.png"))]
         l = 0
         for i in self.picture:
             self.picture[l] = pygame.transform.scale(i, (128, 128))
@@ -36,8 +50,8 @@ class Player:
             self.y += 5
         keys = pygame.key.get_pressed()
         if keys[pygame.K_RIGHT]:
-            self.picture = [pygame.image.load(os.path.join(dir_path, "sprites\mage\mage.png")),
-                            pygame.image.load(os.path.join(dir_path, "sprites\mage\mage2.png"))]
+            self.picture = [pygame.image.load(os.path.join(dir_path, "sprites\mage.png")),
+                            pygame.image.load(os.path.join(dir_path, "sprites\mage2.png"))]
             l = 0
             for i in self.picture:
                 self.picture[l] = pygame.transform.scale(i, (128, 128))
@@ -66,10 +80,10 @@ class Player:
 
 class fire_ball:
     def __init__(self, x, y, speed, side):
-        self.picture = [pygame.image.load(os.path.join(dir_path, "sprites/fireball/fb0.png")),
-                        pygame.image.load(os.path.join(dir_path, "sprites/fireball/fb1.png")),
-                        pygame.image.load(os.path.join(dir_path, "sprites/fireball/fb2.png")),
-                        pygame.image.load(os.path.join(dir_path, "sprites/fireball/fb3.png"))]
+        self.picture = [pygame.image.load(os.path.join(dir_path, "sprites/fb0.png")),
+                        pygame.image.load(os.path.join(dir_path, "sprites/fb1.png")),
+                        pygame.image.load(os.path.join(dir_path, "sprites/fb2.png")),
+                        pygame.image.load(os.path.join(dir_path, "sprites/fb3.png"))]
         l = 0
         for i in self.picture:
             self.picture[l] = pygame.transform.scale(i, (128, 128))
@@ -108,7 +122,7 @@ class erth:
 class meteor:
     def __init__(self):
         self.picture = pygame.transform.scale(pygame.image.load(os.path.join(dir_path, "sprites/meteor.png")), (64,64))
-        self.picture.set_colorkey((246,246,246))
+        self.picture.set_colorkey((255,255,255))
         self.x = -80
         self.y = 800
         self.speedy = 0
@@ -162,17 +176,24 @@ ground = []
 meteo = []
 x = -256
 
-for i in range (0, 3):
+for i in range (0, 10):
     ground.append(erth(x+256, 600))
     x += 256
-ground.append(erth(200, 400))
 for i in range(0,10):
     meteo.append(meteor())
 
+World = pygame.Surface((WorldWidth, WorldHeight))
+cam = Camera()
+
 while game:
     fps.tick(FPS)
-    win.fill((0,0,0))
     player.muve()
+    win.fill((0,0,0))
+    World.fill((0,0,0))
+    World.blit(player.picture[0], player.rect)
+    cam.update(player)
+
+    win.blit(World, (cam.x,cam.y))
     player.showe()
     fb()
     for i in range(0, len(ground)):
@@ -187,8 +208,10 @@ while game:
     for i in meteo:
         i.fall()
         i.showe()
+
     for evente in pygame.event.get():
         if evente.type == pygame.QUIT:
             game = False
+
     pygame.display.update()
 pygame.quit()
