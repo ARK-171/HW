@@ -13,12 +13,13 @@ HEIGHT = 700
 WorldWidth = 3000
 WorldHeight = 1500
 
+stage = 0
+
 class Camera:
     def __init__(self):
         self.x = 0
         self.y = 0
     def update(self, sprite):
-        print(self.x,self.y)
         if sprite.x < WorldWidth - WIDTH/2 and sprite.x > WIDTH/2:
             self.x = int(WIDTH/2) - sprite.x
         elif sprite.x > WorldWidth + WIDTH/2 and sprite.x < WIDTH/2:
@@ -34,7 +35,7 @@ class Player:
                         pygame.image.load(os.path.join(dir_path, "sprites\mage\mage2.png"))]
         l = 0
         for i in self.picture:
-            self.picture[l] = pygame.transform.scale(i, (56, 128))
+            self.picture[l] = pygame.transform.scale(i, (128, 128))
             l += 1
         self.picture1 = [pygame.transform.flip(z, True, False) for z in self.picture]
         self.HP = 100
@@ -53,12 +54,12 @@ class Player:
         elif self.jump == 0:
             self.y += 5
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_RIGHT] and self.x <= 2944:
+        if keys[pygame.K_RIGHT] and self.x <= 2872:
             self.picture = [pygame.image.load(os.path.join(dir_path, "sprites\mage\mage.png")),
                             pygame.image.load(os.path.join(dir_path, "sprites\mage\mage2.png"))]
             l = 0
             for i in self.picture:
-                self.picture[l] = pygame.transform.scale(i, (56, 128))
+                self.picture[l] = pygame.transform.scale(i, (128, 128))
                 l += 1
             self.x += self.speed
             self.state = 1
@@ -72,7 +73,6 @@ class Player:
             if self.jump == 0:
                 self.jump = 200
     def showe(self):
-        print(self.x,self.y)
         if self.tik < 240:
             self.tik += 1
             World.blit(self.picture[0], (self.x, self.y))
@@ -151,6 +151,34 @@ class meteor:
             self.angle = math.degrees(math.atan(self.speedy/self.speedx)) + self.state
     def showe(self):
         World.blit(pygame.transform.rotate(self.picture, self.angle), (self.x, self.y))
+
+class Button:
+    def __init__(self):
+        self.x = 325
+        self.y = 287
+        self.picture = pygame.image.load(os.path.join(dir_path, "sprites/Button2.png"))
+        self.rect = self.picture.get_rect(topleft = (self.x, self.y))
+    def update(self):
+        if self.rect.x < pygame.mouse.get_pos()[0] < self.rect.x + self.rect.width and self.rect.y < pygame.mouse.get_pos()[1] < self.rect.height:
+            if pygame.mouse.get_pressed()[0]:
+                self.onclick()
+            else:
+                self.hover()
+        else:
+            self.nothover()
+    def hover(self):
+        self.picture = pygame.image.load(os.path.join(dir_path, "sprites/Button.png"))
+    def nothover(self):
+        self.picture = pygame.image.load(os.path.join(dir_path, "sprites/Button2.png"))
+    def onclick(self):
+        global stage
+        stage = 1
+                
+class Menu:
+    def __init__(self, x, y, img):
+        self.x = x
+        self.y = y
+        self.image = img
         
 def fb():
     if player.reload < 80:
@@ -179,6 +207,8 @@ player = Player(3)
 fireBall = []
 ground = []
 meteo = []
+menu = Menu(0, 0, pygame.image.load(os.path.join(dir_path, "sprites/startscreen.png")))
+start = Button()
 x = -256
 
 for i in range (0, 12):
@@ -191,30 +221,35 @@ World = pygame.Surface((WorldWidth, WorldHeight))
 cam = Camera()
 
 while game:
-    fps.tick(FPS)
-    player.muve()
-    win.fill((0,0,0))
-    World.fill((0,0,0))
-    cam.update(player)
-    player.showe()
+    if stage == 0:
+        start.update()
+        win.blit(menu.image, (menu.x, menu.y))
+        win.blit(start.picture, (start.x, start.y))
+    elif stage == 1:
+        fps.tick(FPS)
+        player.muve()
+        win.fill((0,0,0))
+        World.fill((0,0,0))
+        cam.update(player)
+        player.showe()
     
-    fb()
-    for i in range(0, len(ground)):
-        ground[i].showe()
-        colider(player, ground[i])
-    if len(fireBall) != 0:
-        for i in range(0, len(fireBall), 2):
-            fireBall[i].move()
-            fireBall[i].showe()
-            if fireBall[i].l >= 700:
-                fireBall.pop(i)
-    for i in meteo:
-        i.fall()
-        i.showe()
+        fb()
+        for i in range(0, len(ground)):
+            ground[i].showe()
+            colider(player, ground[i])
+        if len(fireBall) != 0:
+            for i in range(0, len(fireBall), 2):
+                fireBall[i].move()
+                fireBall[i].showe()
+                if fireBall[i].l >= 700:
+                    fireBall.pop(i)
+        for i in meteo:
+            i.fall()
+            i.showe()
 
-    for evente in pygame.event.get():
-        if evente.type == pygame.QUIT:
-            game = False
-    win.blit(World, (cam.x,cam.y))
-    pygame.display.update()
+        for evente in pygame.event.get():
+            if evente.type == pygame.QUIT:
+                game = False
+        win.blit(World, (cam.x,cam.y))
+        pygame.display.update()
 pygame.quit()
